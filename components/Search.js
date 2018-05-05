@@ -82,30 +82,47 @@ class Search extends Component {
     super(props)
       this.state={
         text: "",
-        data: ""
+        data: "",
+        isLoading : true
       }
   }
+  componentDidMount(){
+    return fetch('https://facebook.github.io/react-native/movies.json')
+      .then((response) => response.json())
+      .then((responseJson) => {
+
+        this.setState({
+          isLoading: false,
+          dataSource: responseJson.movies,
+        });
+
+      })
+      .catch((error) =>{
+        console.error(error);
+      });
+  }
   filter(text){
-      const newData = shows_first.filter(function(item){
-          const itemData = item.name.toUpperCase()
+      const newData = this.state.dataSource.filter(function(item){
+          const itemData = item.title.toUpperCase()
           const textData = text.toUpperCase()
           return itemData.indexOf(textData) > -1
       })
       this.setState({
         data: newData,
-        text: text
+        text: text,
+        isLoading : true
       })
   }
+
   deleteData(){
     this.setState({text: '', data: ''})
   }
   _renderItem(item){
     return(
-      <Image key={item.key} style={styles.image} source={{uri: item.image}}/>
+      <Text>{item.title}, {item.releaseYear}</Text>
     )
   }
   render() {
-    console.log('nada');
     return(
       <View style={styles.container}>
           <View style={styles.header}>
